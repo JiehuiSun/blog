@@ -5,7 +5,12 @@ import sys
 
 
 def main():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'blog_backend.settings')
+    conf_path = "blog_backend.settings"
+    if os.getenv("BLOGHOME"):
+        conf_path += ".pro"
+    else:
+        conf_path += ".dev"
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', conf_path)
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
