@@ -11,6 +11,11 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'blog_backend.settings')
+conf_path = "blog_backend.settings"
+if os.getenv("BLOGHOME"):
+    conf_path += ".pro"
+else:
+    conf_path += ".dev"
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', conf_path)
 
 application = get_wsgi_application()

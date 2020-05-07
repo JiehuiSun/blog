@@ -86,11 +86,11 @@ bak/
 portal/
 
 # conf file
-bin/uwsgi.sh
-egret/wsgi.py
-uwsgi.ini
-uwsgi4system.ini
-*.pid
+# bin/uwsgi.sh
+# egret/wsgi.py
+# uwsgi.ini
+# uwsgi4system.ini
+# *.pid
 
 # vue
 */node_modules/*
