@@ -179,3 +179,17 @@ def compose(*funs):
             f = fun(f)
         return f
     return deco
+
+
+class ModelBase:
+    def to_dict(self):
+        data = {}
+        for f in self._meta.concrete_fields:
+            value = f.value_from_object(self)
+            if f.name == "is_deleted":
+                continue
+            if isinstance(f, models.DateTimeField):
+                value = value.strftime('%Y-%m-%d %H:%M:%S') if value else ""
+
+            data[f.name] = value
+        return data
