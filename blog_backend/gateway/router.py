@@ -8,7 +8,7 @@ from django.conf import settings
 
 """
 每个应用自建router.py文件，按照如下方式注册自己的 api url 和 回调函数/接口到路由表 routing_table；
-key：为请求 url 路径，以 app 应用名开始，后面的路径自定义，需要注意末尾的 /，path 最好都统一以 / 结尾； 
+key：为请求 url 路径，以 app 应用名开始，后面的路径自定义，需要注意末尾的 /，path 最好都统一以 / 结尾；
      url 在实际使用时前面需要加 "/api"，例如下面的例子中前端调用时 url 为 /api/goods/course/;
 value：为回调函数或接口，当为本地回调函数时，以 LPC:: 开头，当为接口是以 URL:: 开头
      LPC:: 后面写调用 class 的路径（class的上一层必须是一个module），URL:: 后写 http 调用地址
