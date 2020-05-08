@@ -6,34 +6,49 @@
 
 
 import types
+import random
+import hashlib
 import datetime
+
+from django.conf import settings
 
 class Resp:
     """
     返回封装
     """
+    """
+    状态码说明: xxxxx
+    前三位: 模块, 第四位: 区域, 第五位: 编码
+    100xx: 系统级
+    109xx: 第三方
+    101xx: 用户级
+    """
     err_code_dict = {
         # 其他
-        10399: "其他错误",  # 找不到错误码使用(正常不会出现)
+        10099: "其他错误",  # 找不到错误码使用(正常不会出现)
 
         # 参数
-        10301: "参数不完整",
-        10302: "参数错误",
-        10303: "上传失败, 不支持的文件格式",
+        10001: "参数不完整",
+        10002: "参数错误",
+        10003: "上传失败, 不支持的文件格式",
 
         # 数据库
-        10311: "数据不存在或已被删除",
-        10312: "未知的数据库错误",
-        10313: "其他模块的数据库错误",
-        10314: "删除失败",
-        10315: "数据错误",
+        10011: "数据不存在或已被删除",
+        10012: "未知的数据库错误",
+        10013: "其他模块的数据库错误",
+        10014: "删除失败",
+        10015: "数据错误",
 
         # 文案
-        10321: "",
+        10021: "",
 
         # 第三方
-        10331: "其他异常",
+        10901: "其他异常",
     }
+
+    # 用户
+    err_code_dict[10121] = "账号错误"
+    err_code_dict[10122] = "密码错误"
 
     @classmethod
     def data(cls, errcode=0, errmsg="", data={}):
@@ -193,3 +208,44 @@ class ModelBase:
 
             data[f.name] = value
         return data
+
+
+def encryption_pwd(user_id):
+    auth_login_key = settings.LOGIN_AUTH_KEY
+    auth_code1 = hashlib.sha256(str("{0}{1}".format(str(user_id), str(auth_login_key))).encode("utf8")).hexdigest()
+    auth_code = hashlib.sha256(str("{0}{1}".format(str(auth_code1), str(auth_login_key))).encode("utf8")).hexdigest()
+    return auth_code
+
+def gen_token(user_id, random_str, timestamp):
+    """
+    算法登录验证
+    :param user_id: integer
+    :param random_str: string
+    :param timestamp: integer
+    :return: token: string
+    """
+    auth_login_key = settings.LOGIN_AUTH_KEY
+    auth_code1 = hashlib.sha256(str("{0}{1}{2}".format(str(user_id), str(random_str), str(auth_login_key))).encode("utf8")).hexdigest()
+    auth_code = hashlib.sha256(str("{0}{1}{2}".format(str(auth_code1), str(timestamp), str(auth_login_key))).encode("utf8")).hexdigest()
+
+    ret_params = {
+        "user_id": user_id,
+        "random_str": random_str,
+        "timestamp": timestamp,
+        "auth_code": auth_code
+    }
+
+    return "{user_id}-{random_str}-{timestamp}-{auth_code}".format(**ret_params)
+
+def make_random_str(random_num=10):
+    """
+    创建随机数
+    """
+    ret = ''
+    for i in range(random_num):
+        num = random.randint(0,9)
+        alfa = chr(random.randint(97,122))
+        alfa2 = chr(random.randint(65,90))
+        s = random.choice([str(num), alfa, alfa2])
+        ret = ret+s
+    return str(ret)
