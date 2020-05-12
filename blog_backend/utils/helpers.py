@@ -12,6 +12,7 @@ import datetime
 
 from django.conf import settings
 
+
 class Resp:
     """
     返回封装
@@ -49,6 +50,8 @@ class Resp:
     # 用户
     err_code_dict[10121] = "账号错误"
     err_code_dict[10122] = "密码错误"
+    err_code_dict[10123] = "用户已存在"
+    err_code_dict[10124] = "TOKEN失效"
 
     @classmethod
     def data(cls, errcode=0, errmsg="", data={}):
@@ -196,20 +199,6 @@ def compose(*funs):
     return deco
 
 
-class ModelBase:
-    def to_dict(self):
-        data = {}
-        for f in self._meta.concrete_fields:
-            value = f.value_from_object(self)
-            if f.name == "is_deleted":
-                continue
-            if isinstance(f, models.DateTimeField):
-                value = value.strftime('%Y-%m-%d %H:%M:%S') if value else ""
-
-            data[f.name] = value
-        return data
-
-
 def encryption_pwd(user_id):
     auth_login_key = settings.LOGIN_AUTH_KEY
     auth_code1 = hashlib.sha256(str("{0}{1}".format(str(user_id), str(auth_login_key))).encode("utf8")).hexdigest()
@@ -226,7 +215,7 @@ def gen_token(user_id, random_str, timestamp):
     """
     auth_login_key = settings.LOGIN_AUTH_KEY
     auth_code1 = hashlib.sha256(str("{0}{1}{2}".format(str(user_id), str(random_str), str(auth_login_key))).encode("utf8")).hexdigest()
-    auth_code = hashlib.sha256(str("{0}{1}{2}".format(str(auth_code1), str(timestamp), str(auth_login_key))).encode("utf8")).hexdigest()
+    auth_code = hashlib.sha256(str("{0}{1}{2}".format(str(auth_code1), str(int(timestamp)), str(auth_login_key))).encode("utf8")).hexdigest()
 
     ret_params = {
         "user_id": user_id,
