@@ -10,6 +10,7 @@ import json
 from functools import wraps
 from django_redis import get_redis_connection
 from users.backend.users_backend import UserBKE
+from django.conf import settings
 
 def loginger(func):
     """
@@ -53,5 +54,5 @@ def loginger(func):
 
 def token_save_to_redis(token, data):
     conn = get_redis_connection("default")
-    conn.set("token_%s" % token, json.dumps(data))
+    conn.set("token_%s" % token, json.dumps(data), timeout=settings.TOKEN_OUTTIME)
     return True
