@@ -11,13 +11,15 @@ import logging
 
 from django_redis import get_redis_connection
 
-from utils.auth import loginger, token_save_to_redis
+from utils.auth import loginger, token_save_to_redis, token_del_to_redis
 from utils.helpers import (BaseViewTools, Resp, compose, gen_token, make_random_str)
 from users.backend.users_backend import UserBKE
 
 logger = logging.getLogger(__name__)
 
 login_auth = compose(loginger)
+
+conn = get_redis_connection("default")
 
 
 class UsersLoginView(BaseViewTools):
@@ -101,9 +103,23 @@ class UserView(BaseViewTools):
         if ret != True:
             return ret
 
-        conn = get_redis_connection("default")
-        if not conn.get("token_%s" % key):
-            return Resp.data(10124)
-
-        user_dict = json.loads(conn.get("token_%s" % key))
+        token = headers["X-AUTH-USERTOKEN"]
+        user_dict = json.loads(conn.get("token_%s" % token))
         return Resp.data(data=user_dict)
+
+
+class UsersLogoutView(BaseViewTools):
+    """
+    用户退出
+    """
+    @login_auth
+    def post(self, headers, data, files=None, key=None):
+        params_dict = {
+        }
+        ret = self.ver_params(params_dict, data)
+        if ret != True:
+            return ret
+
+        token = headers["X-AUTH-USERTOKEN"]
+        token_del_to_redis(token)
+        return Resp.data()

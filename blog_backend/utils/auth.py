@@ -53,6 +53,17 @@ def loginger(func):
     return inner
 
 def token_save_to_redis(token, data):
+    """
+    保存token到缓存
+    """
     conn = get_redis_connection("default")
-    conn.set("token_%s" % token, json.dumps(data), timeout=settings.TOKEN_OUTTIME)
+    conn.set("token_%s" % token, json.dumps(data), settings.TOKEN_OUTTIME)
+    return True
+
+def token_del_to_redis(token):
+    """
+    删除缓存中的token
+    """
+    conn = get_redis_connection("default")
+    conn.delete("token_%s" % token)
     return True
