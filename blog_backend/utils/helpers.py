@@ -23,6 +23,7 @@ class Resp:
     100xx: 系统级
     109xx: 第三方
     101xx: 用户级
+    102xx: 博客级
     """
     err_code_dict = {
         # 其他
@@ -52,6 +53,9 @@ class Resp:
     err_code_dict[10122] = "密码错误"
     err_code_dict[10123] = "用户已存在"
     err_code_dict[10124] = "TOKEN失效"
+
+    # 博客
+    err_code_dict[10221] = "创建失败"
 
     @classmethod
     def data(cls, errcode=0, errmsg="", data={}):
