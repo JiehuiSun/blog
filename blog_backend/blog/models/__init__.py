@@ -5,3 +5,4 @@
 # Filename: __init__.py
 
 
+from .tags_models import TagsModel
