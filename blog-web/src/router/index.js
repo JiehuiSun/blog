@@ -2,7 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // 登录模块
-// import routerLogin from './modules/login'
+import routerLogin from './modules/login'
+// 博客
+import routerBlog from './modules/blog'
 Vue.use(Router)
 
 /* Layout */
@@ -32,6 +34,12 @@ import Layout from '@/layout'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
+
+export const asyncRoutes = [
+  routerLogin,
+  routerBlog
+]
+
 export const constantRoutes = [
   {
     path: '/login',
@@ -58,17 +66,17 @@ export const constantRoutes = [
   },
 
   {
-    path: '/example',
+    path: '/config',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
+    redirect: '/config/tag',
+    name: '配置',
+    meta: { title: '配置', icon: 'example' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'tag',
+        name: '标签',
+        component: () => import('@/views/config/tag/ListTag/index'),
+        meta: { title: '标签', icon: 'table' }
       },
       {
         path: 'tree',
