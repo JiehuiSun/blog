@@ -26,6 +26,8 @@ class TagsView(BaseViewTools):
     def list(self, headers, data, files=None, key=None):
         params_dict = {
             "name": "optional str",
+            "page_num": "optional str",
+            "page_size": "optional str",
         }
         ret = self.ver_params(params_dict, data)
         if ret != True:
@@ -42,6 +44,7 @@ class TagsView(BaseViewTools):
             return Resp.data(data=ret)
 
         ret["data_list"] = [i.to_dict() for i in tags_obj_list]
+        ret["total_size"] = 1
 
         return Resp.data(data=ret)
 
